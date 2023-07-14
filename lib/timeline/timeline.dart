@@ -10,50 +10,43 @@ class Timeline extends StatefulWidget {
 }
 
 class _TimelineState extends State<Timeline> {
-  TimelineState _timelineState = TimelineState(startTime: -100, endTime: 100);
+  final TimelineState _timelineState = TimelineState(startTime: 100, endTime: 1000);
   Offset? _lastFocalPoint;
-  double? _scaleStartYearStart;
-  double? _scaleStartYearEnd;
-
+  double? _startTime;
+  double? _endTime;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onScaleStart: _scaleStart,
       onScaleUpdate: _scaleUpdate,
-      onScaleEnd: _scaleEnd,
-      child: const TimelineRenderWidget(),
+      child: TimelineRenderWidget(_timelineState),
     );
   }
 
-
-
-  void _scaleStart(ScaleStartDetails details)
-  {
+  void _scaleStart(ScaleStartDetails details) {
     _lastFocalPoint = details.focalPoint;
-    _scaleStartYearStart = _timelineState.newStartTime;
-    _scaleStartYearEnd = _timelineState.newStartTime;
-    _timelineState.setViewport(velocity: 0.0, animate: true);
+    _startTime = _timelineState.startTime;
+    _endTime = _timelineState.endTime;
+    _timelineState.setViewport();
   }
 
-  void _scaleUpdate(ScaleUpdateDetails details)
-  {
-    double changeScale = details.scale;
-    double scale = (_scaleStartYearEnd!-_scaleStartYearStart!)/context.size!.height;
+  void _scaleUpdate(ScaleUpdateDetails details) {
+    // 单位时间所占高度
+    double scale = context.size!.height / (_endTime! - _startTime!);
 
-    double focus = _scaleStartYearStart! + details.focalPoint.dy * scale;
-    double focalDiff = (_scaleStartYearStart! + _lastFocalPoint!.dy * scale) - focus;
+    // 计算focus点的偏移量
+    double focusTime = _startTime! + details.focalPoint.dy / scale;
+    double focusTimeDiff =
+        (_lastFocalPoint!.dy - details.focalPoint.dy) / scale;
+    print("${focusTime}, ${focusTimeDiff}");
 
+    // 计算渲染开始时间和结束时间
+    // Ts' = Tp + (s/s') * (Ts - Tp) + diff
+    // Te' = Tp + (s/s') * (Te - Tp) + diff
     _timelineState.setViewport(
-        startTime: focus + (_scaleStartYearStart!-focus)/changeScale + focalDiff,
-        endTime: focus + (_scaleStartYearEnd!-focus)/changeScale + focalDiff,
-        height: context.size!.height,
-        animate: true);
-  }
-
-  void _scaleEnd(ScaleEndDetails details)
-  {
-    double scale = (_timelineState.newEndTime-_timelineState.newStartTime)/context.size!.height;
-    _timelineState.setViewport(velocity: details.velocity.pixelsPerSecond.dy * scale, animate: true);
+        startTime: focusTime + (_startTime! - focusTime) * details.scale + focusTimeDiff,
+        endTime: focusTime + (_endTime! - focusTime) * details.scale + focusTimeDiff,
+        height: context.size!.height);
   }
 }
