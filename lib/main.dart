@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:timeline/timeline/timeline_item.dart';
 
 import 'timeline/timeline.dart';
 
@@ -33,8 +34,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Timeline(),
+    return Scaffold(
+      body: Timeline(items: [
+        TimelineItem(dateTime: 10, child: Container(height: 100, color: Colors.red,)),
+        TimelineItem(dateTime: 100, child: Container(height: 100, color: Colors.red,)),
+        TimelineItem(dateTime: 200, child: Container(height: 100, color: Colors.red,)),
+        TimelineItem(dateTime: 500, child: Container(height: 100, color: Colors.red,)),
+      ]),
     );
   }
 }

@@ -1,26 +1,41 @@
 import 'package:flutter/cupertino.dart';
-import 'package:timeline/timeline/timeline_render_widget.dart';
+import 'package:timeline/timeline/timeline_item.dart';
+import 'package:timeline/timeline/timeline_widget.dart';
 import 'package:timeline/timeline/timeline_state.dart';
 
 class Timeline extends StatefulWidget {
-  const Timeline({Key? key}) : super(key: key);
+  List<TimelineItem> items;
+
+  Timeline({Key? key, required this.items}) : super(key: key);
 
   @override
   State<Timeline> createState() => _TimelineState();
 }
 
 class _TimelineState extends State<Timeline> {
-  final TimelineState _timelineState = TimelineState(startTime: 100, endTime: 1000);
+  late TimelineState _timelineState;
+
   Offset? _lastFocalPoint;
+
   double? _startTime;
+
   double? _endTime;
+
+  @override
+  void initState() {
+    widget.items.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    _timelineState = TimelineState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onScaleStart: _scaleStart,
       onScaleUpdate: _scaleUpdate,
-      child: TimelineRenderWidget(_timelineState),
+      child: TimelineWidget(
+        timelineState: _timelineState,
+        children: widget.items,
+      ),
     );
   }
 
@@ -39,14 +54,16 @@ class _TimelineState extends State<Timeline> {
     double focusTime = _startTime! + details.focalPoint.dy / scale;
     double focusTimeDiff =
         (_lastFocalPoint!.dy - details.focalPoint.dy) / scale;
-    print("${focusTime}, ${focusTimeDiff}");
 
     // 计算渲染开始时间和结束时间
     // Ts' = Tp + (s/s') * (Ts - Tp) + diff
     // Te' = Tp + (s/s') * (Te - Tp) + diff
     _timelineState.setViewport(
-        startTime: focusTime + (_startTime! - focusTime) * details.scale + focusTimeDiff,
-        endTime: focusTime + (_endTime! - focusTime) * details.scale + focusTimeDiff,
+        startTime: focusTime +
+            (_startTime! - focusTime) * details.scale +
+            focusTimeDiff,
+        endTime:
+            focusTime + (_endTime! - focusTime) * details.scale + focusTimeDiff,
         height: context.size!.height);
   }
 }
