@@ -1,19 +1,19 @@
 import 'package:flutter/cupertino.dart';
-import 'package:timeline/timeline/timeline_item.dart';
-import 'package:timeline/timeline/timeline_widget.dart';
-import 'package:timeline/timeline/timeline_state.dart';
+import 'package:timeline/timeline/widget/timeline_item.dart';
+import 'package:timeline/timeline/widget/timeline_widget.dart';
+import 'package:timeline/timeline/core/timeline_controller.dart';
 
 class Timeline extends StatefulWidget {
-  List<TimelineItem> items;
+  final List<TimelineItem> items;
 
-  Timeline({Key? key, required this.items}) : super(key: key);
+  const Timeline({Key? key, required this.items}) : super(key: key);
 
   @override
   State<Timeline> createState() => _TimelineState();
 }
 
 class _TimelineState extends State<Timeline> {
-  late TimelineState _timelineState;
+  late TimelineController _timelineState;
 
   Offset? _lastFocalPoint;
 
@@ -24,7 +24,11 @@ class _TimelineState extends State<Timeline> {
   @override
   void initState() {
     widget.items.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    _timelineState = TimelineState();
+    var startTime =
+        widget.items.first.dateTime.millisecondsSinceEpoch.toDouble();
+    var endTime = widget.items.last.dateTime.millisecondsSinceEpoch.toDouble();
+    _timelineState = TimelineController();
+    _timelineState.setViewport(startTime: startTime, endTime: endTime);
   }
 
   @override
@@ -40,13 +44,14 @@ class _TimelineState extends State<Timeline> {
   }
 
   void _scaleStart(ScaleStartDetails details) {
+    print("-------------------------scale start----------------------------");
     _lastFocalPoint = details.focalPoint;
     _startTime = _timelineState.startTime;
     _endTime = _timelineState.endTime;
-    _timelineState.setViewport();
   }
 
   void _scaleUpdate(ScaleUpdateDetails details) {
+    print("-------------------------scale update----------------------------");
     // 单位时间所占高度
     double scale = context.size!.height / (_endTime! - _startTime!);
 
@@ -60,10 +65,10 @@ class _TimelineState extends State<Timeline> {
     // Te' = Tp + (s/s') * (Te - Tp) + diff
     _timelineState.setViewport(
         startTime: focusTime +
-            (_startTime! - focusTime) * details.scale +
+            (_startTime! - focusTime) / details.scale +
             focusTimeDiff,
         endTime:
-            focusTime + (_endTime! - focusTime) * details.scale + focusTimeDiff,
+            focusTime + (_endTime! - focusTime) / details.scale + focusTimeDiff,
         height: context.size!.height);
   }
 }

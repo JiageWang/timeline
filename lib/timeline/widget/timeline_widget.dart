@@ -1,9 +1,10 @@
-import 'package:flutter/cupertino.dart';
-import 'package:timeline/timeline/timeline_render.dart';
-import 'package:timeline/timeline/timeline_state.dart';
+import 'package:flutter/widgets.dart';
+
+import '../core/timeline_controller.dart';
+import '../render/timeline_widget_render.dart';
 
 class TimelineWidget extends MultiChildRenderObjectWidget {
-  final TimelineState timelineState;
+  final TimelineController timelineState;
 
   const TimelineWidget(
       {super.key, required this.timelineState, required super.children});
