@@ -34,8 +34,8 @@ class TimelineRender extends RenderBox
     while (child != null) {
       final childParentData = child.parentData! as TimelineParentData;
 
-      if (childParentData.dateTime!.compareTo(timeline.startTime) < 0 ||
-          childParentData.dateTime!.compareTo(timeline.endTime) > 0) {
+      if (childParentData.dateTime! < timeline.start ||
+          childParentData.dateTime! > timeline.end!) {
         child.layout(const BoxConstraints(maxHeight: 0, maxWidth: 0));
         child = childParentData.nextSibling;
         continue;

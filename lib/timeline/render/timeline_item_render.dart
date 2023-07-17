@@ -33,7 +33,6 @@ class TimelineItemRender extends RenderProxyBox {
 
   @override
   void performLayout() {
-    print("layout timeline item");
     // 由子元素决定尺寸
     child!.layout(constraints, parentUsesSize: true);
     size = Size.copy(child!.size);
@@ -41,7 +40,6 @@ class TimelineItemRender extends RenderProxyBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    print("paint timeline item");
     context.paintChild(child!, offset);
   }
 }
