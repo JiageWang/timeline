@@ -24,11 +24,12 @@ class _TimelineState extends State<Timeline> {
   @override
   void initState() {
     widget.items.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    _timeline = TimelineController( startTime: widget.items.first.dateTime);
+    _timeline = TimelineController(startTime: widget.items.first.dateTime);
   }
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size);
     return LayoutBuilder(
       builder: (context, constraints) {
         _timeline.initViewport(constraints.maxHeight);
@@ -62,10 +63,14 @@ class _TimelineState extends State<Timeline> {
     // 计算渲染开始时间和结束时间
     // Ts' = Tp + (s/s') * (Ts - Tp) + diff
     // Te' = Tp + (s/s') * (Te - Tp) + diff
-    _timeline.setViewport(
-        newStart:
-            focusTime + (_start! - focusTime) / details.scale + focusTimeDiff,
-        newEnd: focusTime + (_end! - focusTime) / details.scale + focusTimeDiff,
-        newHeight: context.size!.height);
+    var start =
+        focusTime + (_start! - focusTime) / details.scale + focusTimeDiff;
+    var end = focusTime + (_end! - focusTime) / details.scale + focusTimeDiff;
+    var height = context.size!.height;
+    if (height / (end - start) < _timeline.minScale ||
+        height / (end - start) > _timeline.maxScale) {
+      return;
+    }
+    _timeline.setViewport(start, end, height);
   }
 }

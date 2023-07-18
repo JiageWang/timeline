@@ -15,5 +15,9 @@ class TimelineUtils {
 
   static String formatTime(DateTime dateTime) =>
       DateFormat("HH:mm").format(dateTime);
+
+  static bool isMonthFirstDay(DateTime dateTime){
+    return dateTime.day == 1;
+  }
 }
 

@@ -37,12 +37,15 @@ class _MyHomePageState extends State<MyHomePage> {
     print("home, ${DateTime(2010, 1, 2)}");
 
     return Scaffold(
-      body: Timeline(items: [
-        TimelineItem(dateTime: DateTime(2010, 1, 2), child: Container(height: 100, color: Colors.red,)),
-        TimelineItem(dateTime: DateTime(2010, 1, 5), child: Container(height: 100, color: Colors.red,)),
-        TimelineItem(dateTime: DateTime(2010, 1, 8), child: Container(height: 100, color: Colors.red,)),
-        TimelineItem(dateTime: DateTime(2010, 1, 19), child: Container(height: 100, color: Colors.red,)),
-      ]),
+      body: Padding(
+        padding: EdgeInsets.all(MediaQuery.of(context).padding.top),
+        child: Timeline(items: [
+          TimelineItem(dateTime: DateTime(2010, 1, 2), child: Container(height: 100, color: Colors.red,)),
+          TimelineItem(dateTime: DateTime(2010, 1, 5), child: Container(height: 100, color: Colors.red,)),
+          TimelineItem(dateTime: DateTime(2010, 1, 8), child: Container(height: 100, color: Colors.red,)),
+          TimelineItem(dateTime: DateTime(2010, 1, 19), child: Container(height: 100, color: Colors.red,)),
+        ]),
+      ),
     );
   }
 }
