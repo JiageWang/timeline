@@ -27,14 +27,18 @@ class TimelineRender extends RenderBox
   bool hitTestSelf(Offset position) => true;
 
   @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) =>
+      defaultHitTestChildren(result, position: position);
+
+  @override
   void performLayout() {
     size = constraints.biggest;
 
     var child = firstChild;
     while (child != null) {
       final childParentData = child.parentData! as TimelineParentData;
-
-      var itemWidth = size.width - timeline.tickBackgroundWidth;
+      final itemWidth = size.width - timeline.tickBackgroundWidth;
+      // offset在paint过程中确定
       child.layout(
         BoxConstraints(minWidth: itemWidth, maxWidth: itemWidth),
       );

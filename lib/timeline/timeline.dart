@@ -29,7 +29,6 @@ class _TimelineState extends State<Timeline> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size);
     return LayoutBuilder(
       builder: (context, constraints) {
         _timeline.initViewport(constraints.maxHeight);
@@ -46,12 +45,14 @@ class _TimelineState extends State<Timeline> {
   }
 
   void _scaleStart(ScaleStartDetails details) {
+    // print("===========================scale start=============================");
     _lastFocalPoint = details.focalPoint;
     _start = _timeline.start;
     _end = _timeline.end;
   }
 
   void _scaleUpdate(ScaleUpdateDetails details) {
+    // print("===========================scale update=============================");
     // 单位时间所占高度
     double scale = context.size!.height / (_end! - _start!);
 

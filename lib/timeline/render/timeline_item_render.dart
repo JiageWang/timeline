@@ -32,6 +32,9 @@ class TimelineItemRender extends RenderProxyBox {
   }
 
   @override
+  bool get sizedByParent => false;
+
+  @override
   void performLayout() {
     // 由子元素决定尺寸
     child!.layout(constraints, parentUsesSize: true);

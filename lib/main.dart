@@ -34,16 +34,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    print("home, ${DateTime(2010, 1, 2)}");
-
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(MediaQuery.of(context).padding.top),
+        padding: const EdgeInsets.all(50),
         child: Timeline(items: [
-          TimelineItem(dateTime: DateTime(2010, 1, 2), child: Container(height: 100, color: Colors.red,)),
-          TimelineItem(dateTime: DateTime(2010, 1, 5), child: Container(height: 100, color: Colors.red,)),
-          TimelineItem(dateTime: DateTime(2010, 1, 8), child: Container(height: 100, color: Colors.red,)),
-          TimelineItem(dateTime: DateTime(2010, 1, 19), child: Container(height: 100, color: Colors.red,)),
+          TimelineItem(dateTime: DateTime(2010, 1, 6), child: InkWell(child: Container(height: 100, color: Colors.blue,), onTap: (){print("test");},)),
+          TimelineItem(dateTime: DateTime(2010, 1, 5), child: Container(height: 100, color: Colors.grey,)),
+          TimelineItem(dateTime: DateTime(2010, 1, 8), child: Container(height: 100, color: Colors.grey,)),
+          TimelineItem(dateTime: DateTime(2010, 1, 19), child: Container(height: 100, color: Colors.grey,)),
         ]),
       ),
     );

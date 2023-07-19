@@ -92,14 +92,18 @@ class TimelineController {
     var child = firstChild;
     while (child != null) {
       final childParentData = child.parentData! as TimelineParentData;
+
+      // 确定子组件的offset
+      final itemOffsetX = tickBackgroundWidth;
+      final itemOffsetY = (childParentData.dateTime! - start) * scale;
+      childParentData.offset = Offset(itemOffsetX, itemOffsetY);
+
       if (childParentData.dateTime! + child.size.height / scale < start ||
           childParentData.dateTime!  > end) {
         child = childParentData.nextSibling;
         continue;
       }
-      final itemOffsetX = tickBackgroundWidth;
-      final itemOffsetY = (childParentData.dateTime! - start) * scale;
-      context.paintChild(child, Offset(itemOffsetX, itemOffsetY) + offset);
+      context.paintChild(child,  childParentData.offset+ offset);
       child = childParentData.nextSibling;
     }
   }
