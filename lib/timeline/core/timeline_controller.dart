@@ -14,11 +14,10 @@ class TimelineController {
   final double tickBackgroundWidth; // 左侧标签区域总宽度
   final Color tickColor; // 标签颜色
   final Color tickBackgroundColor; // 标签背景颜色
+  // TODO 缩放阈值
   final double minScale = 60 / Duration.millisecondsPerDay;
-
-  // TODO 阈值
-  final double thresholdScale = 900 / Duration.millisecondsPerDay;
-  final double maxScale = 1500 / Duration.millisecondsPerDay;
+  final double maxScale = 600 / Duration.millisecondsPerDay;
+  final double thresholdScale = 300 / Duration.millisecondsPerDay;
 
   double _start;
   late double _end;
@@ -56,6 +55,11 @@ class TimelineController {
 
   /// 更新视图
   void setViewport(double newStart, double newEnd, double newHeight) {
+    var newScale = newHeight / (newEnd - newStart);
+    if (newScale < minScale || newScale > maxScale) {
+      return; // 控制最大最小缩放范围
+    }
+
     _start = newStart;
     _end = newEnd;
     _height = newHeight;
@@ -75,8 +79,11 @@ class TimelineController {
     canvas.drawRect(
         Rect.fromLTWH(offset.dx, offset.dy, tickBackgroundWidth, size.height),
         backgroundPaint);
-
-    paintTicksByDay(canvas, tickPaint, offset, size);
+    if (scale > thresholdScale) {
+      paintTicksByHour(canvas, tickPaint, offset, size);
+    } else {
+      paintTicksByDay(canvas, tickPaint, offset, size);
+    }
   }
 
   /// 动态绘制子组件
@@ -108,11 +115,11 @@ class TimelineController {
       Canvas canvas, Paint tickPaint, Offset offset, Size size) {
     // 计算tick所在时间节点
     var tickTime =
-        DateTime(startTime.year, startTime.month, startTime.day - 1); // 日
+        DateTime(startTime.year, startTime.month, startTime.day); // 日
     var tickPosition = (tickTime.millisecondsSinceEpoch - start) * scale;
     var tickInternal = Duration.millisecondsPerDay * scale;
     var tickInternalTime = const Duration(days: 1);
-    var tickTextStype = const TextStyle(fontSize: 14);
+    var tickTextStyle = const TextStyle(fontSize: 14);
 
     // 绘制刻度
     while (tickPosition <= size.height) {
@@ -125,7 +132,7 @@ class TimelineController {
         // 文本
         TextPainter(
             text: TextSpan(
-                text: TimelineUtils.formatDay(tickTime), style: tickTextStype),
+                text: TimelineUtils.formatDay(tickTime), style: tickTextStyle),
             textDirection: TextDirection.ltr,
             ellipsis: '.')
           ..layout(maxWidth: tickBackgroundWidth)
@@ -134,7 +141,55 @@ class TimelineController {
           TextPainter(
               text: TextSpan(
                   text: tickTime.year.toString(),
-                  style: tickTextStype.copyWith(fontWeight: FontWeight.bold)),
+                  style: tickTextStyle.copyWith(fontWeight: FontWeight.bold)),
+              textDirection: TextDirection.ltr,
+              ellipsis: '.')
+            ..layout(maxWidth: tickBackgroundWidth)
+            ..paint(
+                canvas, Offset(offset.dx + 20, tickPosition + offset.dy - 20));
+        }
+      }
+      tickTime = tickTime.add(tickInternalTime);
+      tickPosition += tickInternal;
+    }
+    //         // 副刻度
+    //         canvas.drawRect(
+    //             Rect.fromLTWH(offset.dx + tickBackgroundWidth - tickSubWidth,
+    //                 tickPosition + offset.dy, tickSubWidth, 1),
+    //             tickPaint);
+  }
+
+  void paintTicksByHour(
+      Canvas canvas, Paint tickPaint, Offset offset, Size size) {
+    // 计算tick所在时间节点
+    var tickTime =
+        DateTime(startTime.year, startTime.month, startTime.day); // 日
+    var tickPosition = (tickTime.millisecondsSinceEpoch - start) * scale;
+    var tickInternal = Duration.millisecondsPerHour * scale * 6; // 6小时
+    var tickInternalTime = const Duration(hours: 6);
+    var tickTextStyle = const TextStyle(fontSize: 14);
+
+    // 绘制刻度
+    while (tickPosition <= size.height) {
+      if (tickPosition >= 0) {
+        // 主刻度
+        canvas.drawRect(
+            Rect.fromLTWH(offset.dx + tickBackgroundWidth - tickWidth,
+                tickPosition + offset.dy, tickWidth, 1.5),
+            tickPaint);
+        // 文本
+        TextPainter(
+            text: TextSpan(
+                text: TimelineUtils.formatTime(tickTime), style: tickTextStyle),
+            textDirection: TextDirection.ltr,
+            ellipsis: '.')
+          ..layout(maxWidth: tickBackgroundWidth)
+          ..paint(canvas, Offset(offset.dx + 20, tickPosition + offset.dy + 2));
+        if (tickTime.hour == 0) {
+          TextPainter(
+              text: TextSpan(
+                  text: TimelineUtils.formatDay(tickTime),
+                  style: tickTextStyle.copyWith(fontWeight: FontWeight.bold)),
               textDirection: TextDirection.ltr,
               ellipsis: '.')
             ..layout(maxWidth: tickBackgroundWidth)
