@@ -1,16 +1,30 @@
-# timeline
+# Timeline
+* A flutter project for present items in timeline.
+* Support scroll and zoom.
 
-A new Flutter project.
+![Simulator Screen Recording - iPhone 14 - 2023-07-26 at 21.58.30.gif](..%2F..%2FDesktop%2FSimulator%20Screen%20Recording%20-%20iPhone%2014%20-%202023-07-26%20at%2021.58.30.gif)
+## Demo code
+```dart
 
-## Getting Started
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+  final String title;
 
-This project is a starting point for a Flutter application.
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Timeline(items: [
+        TimelineItem(dateTime: DateTime(2010, 1, 6), child: InkWell(child: Container(height: 50, color: Colors.blue,), onTap: (){print("test");},)),
+        TimelineItem(dateTime: DateTime(2010, 1, 5), child: Container(height: 50, color: Colors.yellow,)),
+        TimelineItem(dateTime: DateTime(2010, 1, 8), child: Container(height: 50, color: Colors.green,)),
+        TimelineItem(dateTime: DateTime(2010, 1, 19), child: Container(height: 50, color: Colors.red,)),
+      ]),
+    );
+  }
+}
+```
